@@ -107,9 +107,11 @@ function submitRecommendation() {
     if(hollandResult) hollandResult.split('').forEach(c => { if(HOLLAND_COMPATIBILITY[c]) HOLLAND_COMPATIBILITY[c].forEach(m => matchingMajors.add(m)); });
     const getTier = s => s>=680?'top':s>=620?'high':s>=550?'medium':s>=480?'standard':'base';
     
-    fetch('static/data/colleges_full.json')
-        .then(r => r.json())
-        .then(COLLEGES => {
+    Promise.all([
+        fetch('static/data/colleges_full.json').then(r => r.json()),
+        fetch('static/data/universities_211.json').then(r => r.json())
+    ]).then(([colleges985, colleges211]) => {
+        const COLLEGES = [...colleges985, ...colleges211];
             const results = [];
             COLLEGES.forEach(college => {
                 const minScore = userSubject === '理科' ? (college['min_score理科'] || college.min_score) : (college['min_score文科'] || college.min_score);
