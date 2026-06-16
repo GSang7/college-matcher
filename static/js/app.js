@@ -1,284 +1,118 @@
-let currentStep = 1;
-let mbtiAnswers = {};
-let hollandAnswers = {};
-let mbtiResult = '';
-let hollandResult = '';
+const COLLEGES = [{"name":"清华大学","type":"985","city":"北京","province":"北京","min_score":690,"campus_rating":5,"canteen_rating":5,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"计算机科学与技术","category":"工学"},{"name":"电子信息工程","category":"工学"},{"name":"建筑学","category":"工学"},{"name":"经济与金融","category":"经济学"},{"name":"自动化","category":"工学"},{"name":"数学与应用数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"化学","category":"理学"},{"name":"生物科学","category":"理学"},{"name":"法学","category":"法学"},{"name":"新闻学","category":"文学"},{"name":"艺术设计学","category":"艺术学"}]},{"name":"北京大学","type":"985","city":"北京","province":"北京","min_score":688,"campus_rating":5,"canteen_rating":5,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"哲学","category":"哲学"},{"name":"中国语言文学","category":"文学"},{"name":"历史学","category":"历史学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"化学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"计算机科学","category":"工学"},{"name":"经济学","category":"经济学"},{"name":"法学","category":"法学"},{"name":"国际关系","category":"法学"},{"name":"心理学","category":"理学"}]},{"name":"浙江大学","type":"985","city":"杭州","province":"浙江","min_score":670,"campus_rating":5,"canteen_rating":5,"dorm_rating":5,"tags":["双一流","A类"],"majors":[{"name":"计算机科学与技术","category":"工学"},{"name":"控制科学与工程","category":"工学"},{"name":"化学工程与技术","category":"工学"},{"name":"机械工程","category":"工学"},{"name":"电气工程","category":"工学"},{"name":"光学工程","category":"工学"},{"name":"农学","category":"农学"},{"name":"园艺学","category":"农学"},{"name":"管理科学与工程","category":"管理学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"生物医学工程","category":"工学"}]},{"name":"上海交通大学","type":"985","city":"上海","province":"上海","min_score":675,"campus_rating":5,"canteen_rating":5,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"机械工程","category":"工学"},{"name":"船舶与海洋工程","category":"工学"},{"name":"临床医学","category":"医学"},{"name":"计算机科学","category":"工学"},{"name":"电子信息工程","category":"工学"},{"name":"材料科学与工程","category":"工学"},{"name":"生物医学工程","category":"工学"},{"name":"工商管理","category":"管理学"},{"name":"法学","category":"法学"},{"name":"英语","category":"文学"},{"name":"电气工程","category":"工学"},{"name":"仪器科学与技术","category":"工学"}]},{"name":"复旦大学","type":"985","city":"上海","province":"上海","min_score":672,"campus_rating":5,"canteen_rating":5,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"中国语言文学","category":"文学"},{"name":"新闻学","category":"文学"},{"name":"经济学","category":"经济学"},{"name":"哲学","category":"哲学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"化学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"基础医学","category":"医学"},{"name":"临床医学","category":"医学"},{"name":"计算机科学","category":"工学"},{"name":"管理科学与工程","category":"管理学"}]},{"name":"南京大学","type":"985","city":"南京","province":"江苏","min_score":660,"campus_rating":5,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"天文学","category":"理学"},{"name":"地质学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"化学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"计算机科学","category":"工学"},{"name":"环境科学","category":"理学"},{"name":"中国语言文学","category":"文学"},{"name":"历史学","category":"历史学"},{"name":"哲学","category":"哲学"},{"name":"经济学","category":"经济学"},{"name":"软件工程","category":"工学"}]},{"name":"中国科学技术大学","type":"985","city":"合肥","province":"安徽","min_score":665,"campus_rating":5,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"物理学","category":"理学"},{"name":"数学","category":"理学"},{"name":"化学","category":"理学"},{"name":"计算机科学","category":"工学"},{"name":"地球物理学","category":"理学"},{"name":"天文学","category":"理学"},{"name":"生物科学","category":"理学"},{"name":"电子信息工程","category":"工学"},{"name":"自动化","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"核工程","category":"工学"},{"name":"管理科学","category":"管理学"}]},{"name":"哈尔滨工业大学","type":"985","city":"哈尔滨","province":"黑龙江","min_score":635,"campus_rating":4,"canteen_rating":4,"dorm_rating":3,"tags":["双一流","A类","C9联盟"],"majors":[{"name":"机械工程","category":"工学"},{"name":"材料科学与工程","category":"工学"},{"name":"土木工程","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"控制科学与工程","category":"工学"},{"name":"环境科学与工程","category":"工学"},{"name":"仪器科学与技术","category":"工学"},{"name":"力学","category":"工学"},{"name":"光学工程","category":"工学"},{"name":"电气工程","category":"工学"},{"name":"信息与通信工程","category":"工学"},{"name":"建筑学","category":"工学"}]},{"name":"西安交通大学","type":"985","city":"西安","province":"陕西","min_score":640,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类","C9联盟"],"majors":[{"name":"机械工程","category":"工学"},{"name":"电气工程","category":"工学"},{"name":"能源与动力工程","category":"工学"},{"name":"管理科学与工程","category":"管理学"},{"name":"工商管理","category":"管理学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"计算机科学","category":"工学"},{"name":"临床医学","category":"医学"},{"name":"生物医学工程","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"法学","category":"法学"}]},{"name":"武汉大学","type":"985","city":"武汉","province":"湖北","min_score":645,"campus_rating":5,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"测绘科学与技术","category":"工学"},{"name":"地球物理学","category":"理学"},{"name":"水利工程","category":"工学"},{"name":"法学","category":"法学"},{"name":"图书情报与档案管理","category":"管理学"},{"name":"马克思主义理论","category":"法学"},{"name":"中国语言文学","category":"文学"},{"name":"数学","category":"理学"},{"name":"化学","category":"理学"},{"name":"计算机科学","category":"工学"},{"name":"软件工程","category":"工学"},{"name":"口腔医学","category":"医学"}]},{"name":"华中科技大学","type":"985","city":"武汉","province":"湖北","min_score":640,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"机械工程","category":"工学"},{"name":"光学工程","category":"工学"},{"name":"电气工程","category":"工学"},{"name":"临床医学","category":"医学"},{"name":"公共卫生与预防医学","category":"医学"},{"name":"计算机科学","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"生物医学工程","category":"工学"},{"name":"管理科学与工程","category":"管理学"},{"name":"新闻传播学","category":"文学"},{"name":"电子信息工程","category":"工学"},{"name":"船舶与海洋工程","category":"工学"}]},{"name":"中山大学","type":"985","city":"广州","province":"广东","min_score":645,"campus_rating":5,"canteen_rating":5,"dorm_rating":5,"tags":["双一流","A类"],"majors":[{"name":"临床医学","category":"医学"},{"name":"工商管理","category":"管理学"},{"name":"哲学","category":"哲学"},{"name":"中国语言文学","category":"文学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"化学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"计算机科学","category":"工学"},{"name":"法学","category":"法学"},{"name":"社会学","category":"法学"},{"name":"公共卫生与预防医学","category":"医学"}]},{"name":"四川大学","type":"985","city":"成都","province":"四川","min_score":630,"campus_rating":4,"canteen_rating":5,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"口腔医学","category":"医学"},{"name":"临床医学","category":"医学"},{"name":"数学","category":"理学"},{"name":"化学","category":"理学"},{"name":"中国语言文学","category":"文学"},{"name":"历史学","category":"历史学"},{"name":"材料科学","category":"工学"},{"name":"水利工程","category":"工学"},{"name":"生物医学工程","category":"工学"},{"name":"药学","category":"医学"},{"name":"护理学","category":"医学"},{"name":"法学","category":"法学"}]},{"name":"天津大学","type":"985","city":"天津","province":"天津","min_score":640,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"化学工程与技术","category":"工学"},{"name":"仪器科学与技术","category":"工学"},{"name":"建筑学","category":"工学"},{"name":"水利工程","category":"工学"},{"name":"管理科学与工程","category":"管理学"},{"name":"土木工程","category":"工学"},{"name":"船舶与海洋工程","category":"工学"},{"name":"电气工程","category":"工学"},{"name":"机械工程","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"法学","category":"法学"}]},{"name":"南开大学","type":"985","city":"天津","province":"天津","min_score":645,"campus_rating":5,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"化学","category":"理学"},{"name":"数学","category":"理学"},{"name":"经济学","category":"经济学"},{"name":"工商管理","category":"管理学"},{"name":"中国语言文学","category":"文学"},{"name":"历史学","category":"历史学"},{"name":"哲学","category":"哲学"},{"name":"物理学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"计算机科学","category":"工学"},{"name":"法学","category":"法学"},{"name":"社会学","category":"法学"}]},{"name":"北京航空航天大学","type":"985","city":"北京","province":"北京","min_score":655,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"航空宇航科学与技术","category":"工学"},{"name":"仪器科学与技术","category":"工学"},{"name":"材料科学与工程","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"软件工程","category":"工学"},{"name":"控制科学与工程","category":"工学"},{"name":"机械工程","category":"工学"},{"name":"信息与通信工程","category":"工学"},{"name":"电子信息工程","category":"工学"},{"name":"数学","category":"理学"},{"name":"管理科学与工程","category":"管理学"},{"name":"法学","category":"法学"}]},{"name":"北京理工大学","type":"985","city":"北京","province":"北京","min_score":645,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"兵器科学与技术","category":"工学"},{"name":"机械工程","category":"工学"},{"name":"光学工程","category":"工学"},{"name":"信息与通信工程","category":"工学"},{"name":"控制科学与工程","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"化学工程与技术","category":"工学"},{"name":"管理科学与工程","category":"管理学"},{"name":"法学","category":"法学"},{"name":"设计学","category":"艺术学"},{"name":"数学","category":"理学"}]},{"name":"同济大学","type":"985","city":"上海","province":"上海","min_score":650,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"建筑学","category":"工学"},{"name":"土木工程","category":"工学"},{"name":"城乡规划","category":"工学"},{"name":"环境科学与工程","category":"工学"},{"name":"交通运输工程","category":"工学"},{"name":"机械工程","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"临床医学","category":"医学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"法学","category":"法学"},{"name":"设计学","category":"艺术学"}]},{"name":"厦门大学","type":"985","city":"厦门","province":"福建","min_score":640,"campus_rating":5,"canteen_rating":5,"dorm_rating":5,"tags":["双一流","A类"],"majors":[{"name":"化学","category":"理学"},{"name":"海洋科学","category":"理学"},{"name":"统计学","category":"理学"},{"name":"经济学","category":"经济学"},{"name":"工商管理","category":"管理学"},{"name":"会计学","category":"管理学"},{"name":"法学","category":"法学"},{"name":"中国语言文学","category":"文学"},{"name":"历史学","category":"历史学"},{"name":"计算机科学","category":"工学"},{"name":"物理学","category":"理学"},{"name":"生物科学","category":"理学"}]},{"name":"东南大学","type":"985","city":"南京","province":"江苏","min_score":645,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"建筑学","category":"工学"},{"name":"城乡规划","category":"工学"},{"name":"交通运输工程","category":"工学"},{"name":"电子科学与技术","category":"工学"},{"name":"生物医学工程","category":"工学"},{"name":"信息与通信工程","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"机械工程","category":"工学"},{"name":"控制科学与工程","category":"工学"},{"name":"临床医学","category":"医学"},{"name":"数学","category":"理学"},{"name":"法学","category":"法学"}]},{"name":"山东大学","type":"985","city":"济南","province":"山东","min_score":625,"campus_rating":4,"canteen_rating":4,"dorm_rating":3,"tags":["双一流","A类"],"majors":[{"name":"数学","category":"理学"},{"name":"材料科学","category":"工学"},{"name":"中国语言文学","category":"文学"},{"name":"历史学","category":"历史学"},{"name":"临床医学","category":"医学"},{"name":"机械工程","category":"工学"},{"name":"控制科学","category":"工学"},{"name":"电气工程","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"法学","category":"法学"},{"name":"哲学","category":"哲学"},{"name":"物理学","category":"理学"}]},{"name":"吉林大学","type":"985","city":"长春","province":"吉林","min_score":610,"campus_rating":4,"canteen_rating":3,"dorm_rating":3,"tags":["双一流","A类"],"majors":[{"name":"车辆工程","category":"工学"},{"name":"化学","category":"理学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"机械工程","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"地质学","category":"理学"},{"name":"考古学","category":"历史学"},{"name":"法学","category":"法学"},{"name":"经济学","category":"经济学"},{"name":"临床医学","category":"医学"},{"name":"哲学","category":"哲学"}]},{"name":"大连理工大学","type":"985","city":"大连","province":"辽宁","min_score":625,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"化学工程与技术","category":"工学"},{"name":"力学","category":"工学"},{"name":"水利工程","category":"工学"},{"name":"机械工程","category":"工学"},{"name":"土木工程","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"电子信息工程","category":"工学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"管理科学与工程","category":"管理学"},{"name":"法学","category":"法学"}]},{"name":"湖南大学","type":"985","city":"长沙","province":"湖南","min_score":620,"campus_rating":5,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"土木工程","category":"工学"},{"name":"建筑学","category":"工学"},{"name":"化学","category":"理学"},{"name":"机械工程","category":"工学"},{"name":"电气工程","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"工商管理","category":"管理学"},{"name":"设计学","category":"艺术学"},{"name":"计算机科学","category":"工学"},{"name":"法学","category":"法学"},{"name":"金融学","category":"经济学"},{"name":"新闻传播学","category":"文学"}]},{"name":"中南大学","type":"985","city":"长沙","province":"湖南","min_score":620,"campus_rating":4,"canteen_rating":4,"dorm_rating":3,"tags":["双一流","A类"],"majors":[{"name":"冶金工程","category":"工学"},{"name":"矿业工程","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"临床医学","category":"医学"},{"name":"机械工程","category":"工学"},{"name":"土木工程","category":"工学"},{"name":"交通运输工程","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"数学","category":"理学"},{"name":"药学","category":"医学"},{"name":"法学","category":"法学"},{"name":"护理学","category":"医学"}]},{"name":"华南理工大学","type":"985","city":"广州","province":"广东","min_score":635,"campus_rating":4,"canteen_rating":5,"dorm_rating":5,"tags":["双一流","A类"],"majors":[{"name":"轻工技术与工程","category":"工学"},{"name":"食品科学与工程","category":"工学"},{"name":"建筑学","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"化学工程与技术","category":"工学"},{"name":"机械工程","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"电子信息工程","category":"工学"},{"name":"电气工程","category":"工学"},{"name":"生物医学工程","category":"工学"},{"name":"城乡规划","category":"工学"},{"name":"法学","category":"法学"}]},{"name":"重庆大学","type":"985","city":"重庆","province":"重庆","min_score":620,"campus_rating":4,"canteen_rating":5,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"建筑学","category":"工学"},{"name":"土木工程","category":"工学"},{"name":"机械工程","category":"工学"},{"name":"电气工程","category":"工学"},{"name":"城乡规划","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"环境科学","category":"理学"},{"name":"生物医学工程","category":"工学"},{"name":"法学","category":"法学"},{"name":"工商管理","category":"管理学"},{"name":"新闻传播学","category":"文学"}]},{"name":"电子科技大学","type":"985","city":"成都","province":"四川","min_score":635,"campus_rating":4,"canteen_rating":5,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"电子科学与技术","category":"工学"},{"name":"信息与通信工程","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"软件工程","category":"工学"},{"name":"光学工程","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"生物医学工程","category":"工学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"管理科学与工程","category":"管理学"},{"name":"法学","category":"法学"},{"name":"新闻传播学","category":"文学"}]},{"name":"兰州大学","type":"985","city":"兰州","province":"甘肃","min_score":590,"campus_rating":4,"canteen_rating":3,"dorm_rating":3,"tags":["双一流","A类"],"majors":[{"name":"化学","category":"理学"},{"name":"大气科学","category":"理学"},{"name":"生态学","category":"理学"},{"name":"草学","category":"农学"},{"name":"核科学与技术","category":"工学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"地理学","category":"理学"},{"name":"历史学","category":"历史学"},{"name":"民族学","category":"法学"},{"name":"临床医学","category":"医学"}]},{"name":"中国农业大学","type":"985","city":"北京","province":"北京","min_score":620,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"农学","category":"农学"},{"name":"植物保护","category":"农学"},{"name":"动物科学","category":"农学"},{"name":"动物医学","category":"农学"},{"name":"食品科学与工程","category":"工学"},{"name":"园艺学","category":"农学"},{"name":"农业工程","category":"工学"},{"name":"生物科学","category":"理学"},{"name":"环境科学","category":"理学"},{"name":"水利水电工程","category":"工学"},{"name":"经济学","category":"经济学"},{"name":"法学","category":"法学"}]},{"name":"东北大学","type":"985","city":"沈阳","province":"辽宁","min_score":610,"campus_rating":4,"canteen_rating":3,"dorm_rating":3,"tags":["双一流","A类"],"majors":[{"name":"冶金工程","category":"工学"},{"name":"控制科学与工程","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"机械工程","category":"工学"},{"name":"信息与通信工程","category":"工学"},{"name":"矿业工程","category":"工学"},{"name":"生物医学工程","category":"工学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"管理科学与工程","category":"管理学"},{"name":"法学","category":"法学"}]},{"name":"西北农林科技大学","type":"985","city":"咸阳","province":"陕西","min_score":580,"campus_rating":4,"canteen_rating":3,"dorm_rating":3,"tags":["双一流","A类"],"majors":[{"name":"农学","category":"农学"},{"name":"林学","category":"农学"},{"name":"园艺学","category":"农学"},{"name":"植物保护","category":"农学"},{"name":"水土保持与荒漠化防治","category":"农学"},{"name":"动物科学","category":"农学"},{"name":"动物医学","category":"农学"},{"name":"食品科学与工程","category":"工学"},{"name":"农业工程","category":"工学"},{"name":"葡萄酒工程","category":"工学"},{"name":"生物科学","category":"理学"},{"name":"环境科学","category":"理学"}]},{"name":"西北工业大学","type":"985","city":"西安","province":"陕西","min_score":625,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"航空宇航科学与技术","category":"工学"},{"name":"材料科学与工程","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"机械工程","category":"工学"},{"name":"控制科学与工程","category":"工学"},{"name":"信息与通信工程","category":"工学"},{"name":"兵器科学与技术","category":"工学"},{"name":"船舶与海洋工程","category":"工学"},{"name":"电子科学与技术","category":"工学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"管理科学与工程","category":"管理学"}]},{"name":"中国海洋大学","type":"985","city":"青岛","province":"山东","min_score":610,"campus_rating":5,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"海洋科学","category":"理学"},{"name":"水产","category":"农学"},{"name":"海洋资源与环境","category":"理学"},{"name":"食品科学与工程","category":"工学"},{"name":"环境科学","category":"理学"},{"name":"药学","category":"医学"},{"name":"计算机科学","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"化学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"法学","category":"法学"},{"name":"经济学","category":"经济学"}]},{"name":"国防科技大学","type":"985","city":"长沙","province":"湖南","min_score":650,"campus_rating":5,"canteen_rating":5,"dorm_rating":5,"tags":["双一流","A类","军事院校"],"majors":[{"name":"计算机科学与技术","category":"工学"},{"name":"信息与通信工程","category":"工学"},{"name":"控制科学与工程","category":"工学"},{"name":"航空宇航科学与技术","category":"工学"},{"name":"光学工程","category":"工学"},{"name":"材料科学与工程","category":"工学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"管理科学与工程","category":"管理学"},{"name":"外国语言文学","category":"文学"},{"name":"大气科学","category":"理学"},{"name":"兵器科学与技术","category":"工学"}]},{"name":"北京师范大学","type":"985","city":"北京","province":"北京","min_score":650,"campus_rating":5,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"教育学","category":"教育学"},{"name":"心理学","category":"理学"},{"name":"中国语言文学","category":"文学"},{"name":"历史学","category":"历史学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"化学","category":"理学"},{"name":"地理科学","category":"理学"},{"name":"环境科学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"法学","category":"法学"},{"name":"哲学","category":"哲学"}]},{"name":"华东师范大学","type":"985","city":"上海","province":"上海","min_score":645,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"教育学","category":"教育学"},{"name":"心理学","category":"理学"},{"name":"中国语言文学","category":"文学"},{"name":"地理学","category":"理学"},{"name":"统计学","category":"理学"},{"name":"软件工程","category":"工学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"化学","category":"理学"},{"name":"历史学","category":"历史学"},{"name":"哲学","category":"哲学"},{"name":"国际经济与贸易","category":"经济学"}]},{"name":"中央民族大学","type":"985","city":"北京","province":"北京","min_score":620,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","A类"],"majors":[{"name":"民族学","category":"法学"},{"name":"中国少数民族语言文学","category":"文学"},{"name":"社会学","category":"法学"},{"name":"法学","category":"法学"},{"name":"经济学","category":"经济学"},{"name":"工商管理","category":"管理学"},{"name":"新闻传播学","category":"文学"},{"name":"中国语言文学","category":"文学"},{"name":"历史学","category":"历史学"},{"name":"计算机科学","category":"工学"},{"name":"音乐学","category":"艺术学"},{"name":"美术学","category":"艺术学"}]},{"name":"上海财经大学","type":"211","city":"上海","province":"上海","min_score":640,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","财经类顶尖"],"majors":[{"name":"会计学","category":"管理学"},{"name":"金融学","category":"经济学"},{"name":"经济学","category":"经济学"},{"name":"财政学","category":"经济学"},{"name":"国际经济与贸易","category":"经济学"},{"name":"统计学","category":"理学"},{"name":"工商管理","category":"管理学"},{"name":"信息管理与信息系统","category":"管理学"},{"name":"法学","category":"法学"},{"name":"新闻学","category":"文学"},{"name":"公共管理","category":"管理学"},{"name":"数学","category":"理学"}]},{"name":"中央财经大学","type":"211","city":"北京","province":"北京","min_score":635,"campus_rating":3,"canteen_rating":4,"dorm_rating":3,"tags":["双一流","财经类顶尖"],"majors":[{"name":"金融学","category":"经济学"},{"name":"会计学","category":"管理学"},{"name":"财政学","category":"经济学"},{"name":"经济学","category":"经济学"},{"name":"统计学","category":"理学"},{"name":"工商管理","category":"管理学"},{"name":"保险学","category":"经济学"},{"name":"国际经济与贸易","category":"经济学"},{"name":"法学","category":"法学"},{"name":"公共管理","category":"管理学"},{"name":"信息管理与信息系统","category":"管理学"},{"name":"投资学","category":"经济学"}]},{"name":"对外经济贸易大学","type":"211","city":"北京","province":"北京","min_score":635,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","财经类顶尖"],"majors":[{"name":"国际经济与贸易","category":"经济学"},{"name":"金融学","category":"经济学"},{"name":"商务英语","category":"文学"},{"name":"法学","category":"法学"},{"name":"会计学","category":"管理学"},{"name":"工商管理","category":"管理学"},{"name":"经济学","category":"经济学"},{"name":"日语","category":"文学"},{"name":"法语","category":"文学"},{"name":"西班牙语","category":"文学"},{"name":"阿拉伯语","category":"文学"},{"name":"信息管理与信息系统","category":"管理学"}]},{"name":"西南财经大学","type":"211","city":"成都","province":"四川","min_score":610,"campus_rating":4,"canteen_rating":5,"dorm_rating":4,"tags":["双一流","财经类重点"],"majors":[{"name":"金融学","category":"经济学"},{"name":"会计学","category":"管理学"},{"name":"经济学","category":"经济学"},{"name":"工商管理","category":"管理学"},{"name":"保险学","category":"经济学"},{"name":"财政学","category":"经济学"},{"name":"法学","category":"法学"},{"name":"统计学","category":"理学"},{"name":"信息管理与信息系统","category":"管理学"},{"name":"人力资源管理","category":"管理学"},{"name":"英语","category":"文学"},{"name":"计算机科学","category":"工学"}]},{"name":"中南财经政法大学","type":"211","city":"武汉","province":"湖北","min_score":610,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","财经政法类重点"],"majors":[{"name":"法学","category":"法学"},{"name":"会计学","category":"管理学"},{"name":"金融学","category":"经济学"},{"name":"经济学","category":"经济学"},{"name":"财政学","category":"经济学"},{"name":"工商管理","category":"管理学"},{"name":"国际经济与贸易","category":"经济学"},{"name":"新闻传播学","category":"文学"},{"name":"公共管理","category":"管理学"},{"name":"统计学","category":"理学"},{"name":"英语","category":"文学"},{"name":"信息管理与信息系统","category":"管理学"}]},{"name":"东北财经大学","type":"普通本科","city":"大连","province":"辽宁","min_score":580,"campus_rating":4,"canteen_rating":4,"dorm_rating":3,"tags":["财经类重点"],"majors":[{"name":"会计学","category":"管理学"},{"name":"金融学","category":"经济学"},{"name":"经济学","category":"经济学"},{"name":"财政学","category":"经济学"},{"name":"工商管理","category":"管理学"},{"name":"统计学","category":"理学"},{"name":"法学","category":"法学"},{"name":"国际经济与贸易","category":"经济学"},{"name":"信息管理与信息系统","category":"管理学"},{"name":"公共管理","category":"管理学"},{"name":"新闻传播学","category":"文学"},{"name":"英语","category":"文学"}]},{"name":"首都医科大学","type":"普通本科","city":"北京","province":"北京","min_score":620,"campus_rating":4,"canteen_rating":4,"dorm_rating":3,"tags":["医学类重点"],"majors":[{"name":"临床医学","category":"医学"},{"name":"口腔医学","category":"医学"},{"name":"基础医学","category":"医学"},{"name":"护理学","category":"医学"},{"name":"药学","category":"医学"},{"name":"公共卫生与预防医学","category":"医学"},{"name":"生物医学工程","category":"工学"},{"name":"假肢矫形工程","category":"工学"},{"name":"法学","category":"法学"},{"name":"公共事业管理","category":"管理学"}]},{"name":"南京医科大学","type":"普通本科","city":"南京","province":"江苏","min_score":590,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["医学类重点"],"majors":[{"name":"临床医学","category":"医学"},{"name":"口腔医学","category":"医学"},{"name":"基础医学","category":"医学"},{"name":"护理学","category":"医学"},{"name":"药学","category":"医学"},{"name":"公共卫生与预防医学","category":"医学"},{"name":"生物医学工程","category":"工学"},{"name":"医学检验技术","category":"医学"},{"name":"医学影像学","category":"医学"},{"name":"法医学","category":"医学"}]},{"name":"哈尔滨医科大学","type":"普通本科","city":"哈尔滨","province":"黑龙江","min_score":570,"campus_rating":3,"canteen_rating":3,"dorm_rating":3,"tags":["医学类重点"],"majors":[{"name":"临床医学","category":"医学"},{"name":"口腔医学","category":"医学"},{"name":"基础医学","category":"医学"},{"name":"护理学","category":"医学"},{"name":"药学","category":"医学"},{"name":"公共卫生与预防医学","category":"医学"},{"name":"生物医学工程","category":"工学"},{"name":"医学检验技术","category":"医学"},{"name":"医学影像学","category":"医学"},{"name":"法医学","category":"医学"}]},{"name":"中国传媒大学","type":"211","city":"北京","province":"北京","min_score":630,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","传媒类顶尖"],"majors":[{"name":"新闻学","category":"文学"},{"name":"广播电视学","category":"文学"},{"name":"广告学","category":"文学"},{"name":"传播学","category":"文学"},{"name":"戏剧影视导演","category":"艺术学"},{"name":"表演","category":"艺术学"},{"name":"动画","category":"艺术学"},{"name":"录音艺术","category":"艺术学"},{"name":"播音与主持艺术","category":"艺术学"},{"name":"数字媒体艺术","category":"艺术学"},{"name":"网络与新媒体","category":"文学"},{"name":"英语","category":"文学"}]},{"name":"北京外国语大学","type":"211","city":"北京","province":"北京","min_score":635,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","语言类顶尖"],"majors":[{"name":"英语","category":"文学"},{"name":"日语","category":"文学"},{"name":"法语","category":"文学"},{"name":"德语","category":"文学"},{"name":"西班牙语","category":"文学"},{"name":"俄语","category":"文学"},{"name":"阿拉伯语","category":"文学"},{"name":"葡萄牙语","category":"文学"},{"name":"意大利语","category":"文学"},{"name":"翻译","category":"文学"},{"name":"外交学","category":"法学"},{"name":"国际经济与贸易","category":"经济学"}]},{"name":"中国政法大学","type":"211","city":"北京","province":"北京","min_score":635,"campus_rating":3,"canteen_rating":4,"dorm_rating":3,"tags":["双一流","法学类顶尖"],"majors":[{"name":"法学","category":"法学"},{"name":"政治学与行政学","category":"法学"},{"name":"社会学","category":"法学"},{"name":"侦查学","category":"法学"},{"name":"治安学","category":"法学"},{"name":"新闻学","category":"文学"},{"name":"哲学","category":"哲学"},{"name":"公共管理","category":"管理学"},{"name":"经济学","category":"经济学"},{"name":"工商管理","category":"管理学"},{"name":"英语","category":"文学"},{"name":"思想政治教育","category":"法学"}]},{"name":"南京师范大学","type":"211","city":"南京","province":"江苏","min_score":600,"campus_rating":5,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","师范类重点"],"majors":[{"name":"教育学","category":"教育学"},{"name":"中国语言文学","category":"文学"},{"name":"地理学","category":"理学"},{"name":"法学","category":"法学"},{"name":"心理学","category":"理学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"化学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"历史学","category":"历史学"},{"name":"新闻传播学","category":"文学"},{"name":"计算机科学","category":"工学"}]},{"name":"华中师范大学","type":"211","city":"武汉","province":"湖北","min_score":605,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","师范类重点"],"majors":[{"name":"教育学","category":"教育学"},{"name":"中国语言文学","category":"文学"},{"name":"政治学","category":"法学"},{"name":"社会学","category":"法学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"化学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"心理学","category":"理学"},{"name":"历史学","category":"历史学"},{"name":"新闻传播学","category":"文学"},{"name":"计算机科学","category":"工学"}]},{"name":"西南大学","type":"211","city":"重庆","province":"重庆","min_score":590,"campus_rating":4,"canteen_rating":5,"dorm_rating":4,"tags":["双一流"],"majors":[{"name":"教育学","category":"教育学"},{"name":"心理学","category":"理学"},{"name":"农学","category":"农学"},{"name":"蚕学","category":"农学"},{"name":"园艺学","category":"农学"},{"name":"植物保护","category":"农学"},{"name":"中国语言文学","category":"文学"},{"name":"历史学","category":"历史学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"化学","category":"理学"},{"name":"生物学","category":"理学"}]},{"name":"陕西师范大学","type":"211","city":"西安","province":"陕西","min_score":590,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","师范类重点"],"majors":[{"name":"中国语言文学","category":"文学"},{"name":"历史学","category":"历史学"},{"name":"教育学","category":"教育学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"化学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"地理学","category":"理学"},{"name":"心理学","category":"理学"},{"name":"哲学","category":"哲学"},{"name":"法学","category":"法学"},{"name":"计算机科学","category":"工学"}]},{"name":"东北师范大学","type":"211","city":"长春","province":"吉林","min_score":590,"campus_rating":4,"canteen_rating":3,"dorm_rating":3,"tags":["双一流","师范类重点"],"majors":[{"name":"教育学","category":"教育学"},{"name":"世界史","category":"历史学"},{"name":"中国语言文学","category":"文学"},{"name":"数学","category":"理学"},{"name":"化学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"地理学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"心理学","category":"理学"},{"name":"历史学","category":"历史学"},{"name":"法学","category":"法学"},{"name":"计算机科学","category":"工学"}]},{"name":"华南师范大学","type":"211","city":"广州","province":"广东","min_score":600,"campus_rating":4,"canteen_rating":5,"dorm_rating":5,"tags":["双一流","师范类重点"],"majors":[{"name":"心理学","category":"理学"},{"name":"教育学","category":"教育学"},{"name":"物理学","category":"理学"},{"name":"数学","category":"理学"},{"name":"化学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"中国语言文学","category":"文学"},{"name":"历史学","category":"历史学"},{"name":"地理学","category":"理学"},{"name":"法学","category":"法学"},{"name":"计算机科学","category":"工学"},{"name":"新闻传播学","category":"文学"}]},{"name":"湖南师范大学","type":"211","city":"长沙","province":"湖南","min_score":590,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流"],"majors":[{"name":"外国语言文学","category":"文学"},{"name":"中国语言文学","category":"文学"},{"name":"数学","category":"理学"},{"name":"化学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"教育学","category":"教育学"},{"name":"历史学","category":"历史学"},{"name":"法学","category":"法学"},{"name":"哲学","category":"哲学"},{"name":"物理学","category":"理学"},{"name":"地理学","category":"理学"},{"name":"新闻传播学","category":"文学"}]},{"name":"南京航空航天大学","type":"211","city":"南京","province":"江苏","min_score":615,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","航空航天类重点"],"majors":[{"name":"航空宇航科学与技术","category":"工学"},{"name":"力学","category":"工学"},{"name":"机械工程","category":"工学"},{"name":"电气工程","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"信息与通信工程","category":"工学"},{"name":"控制科学与工程","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"管理科学与工程","category":"管理学"},{"name":"法学","category":"法学"}]},{"name":"南京理工大学","type":"211","city":"南京","province":"江苏","min_score":615,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","兵器类重点"],"majors":[{"name":"兵器科学与技术","category":"工学"},{"name":"光学工程","category":"工学"},{"name":"机械工程","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"化学工程与技术","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"信息与通信工程","category":"工学"},{"name":"控制科学与工程","category":"工学"},{"name":"电子科学与技术","category":"工学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"管理科学与工程","category":"管理学"}]},{"name":"苏州大学","type":"211","city":"苏州","province":"江苏","min_score":600,"campus_rating":5,"canteen_rating":4,"dorm_rating":5,"tags":["双一流"],"majors":[{"name":"材料科学与工程","category":"工学"},{"name":"纺织科学与工程","category":"工学"},{"name":"临床医学","category":"医学"},{"name":"中国语言文学","category":"文学"},{"name":"数学","category":"理学"},{"name":"化学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"法学","category":"法学"},{"name":"政治学","category":"法学"},{"name":"药学","category":"医学"},{"name":"计算机科学","category":"工学"},{"name":"设计学","category":"艺术学"}]},{"name":"郑州大学","type":"211","city":"郑州","province":"河南","min_score":590,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","211"],"majors":[{"name":"临床医学","category":"医学"},{"name":"材料科学","category":"工学"},{"name":"化学","category":"理学"},{"name":"水利水电工程","category":"工学"},{"name":"土木工程","category":"工学"},{"name":"机械工程","category":"工学"},{"name":"法学","category":"法学"},{"name":"中国语言文学","category":"文学"},{"name":"历史学","category":"历史学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"新闻传播学","category":"文学"}]},{"name":"南昌大学","type":"211","city":"南昌","province":"江西","min_score":580,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","211"],"majors":[{"name":"材料科学","category":"工学"},{"name":"食品科学与工程","category":"工学"},{"name":"化学","category":"理学"},{"name":"临床医学","category":"医学"},{"name":"中国语言文学","category":"文学"},{"name":"历史学","category":"历史学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"法学","category":"法学"},{"name":"新闻传播学","category":"文学"},{"name":"计算机科学","category":"工学"}]},{"name":"云南大学","type":"211","city":"昆明","province":"云南","min_score":580,"campus_rating":5,"canteen_rating":5,"dorm_rating":4,"tags":["双一流","211"],"majors":[{"name":"民族学","category":"法学"},{"name":"生态学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"化学","category":"理学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"中国语言文学","category":"文学"},{"name":"历史学","category":"历史学"},{"name":"法学","category":"法学"},{"name":"经济学","category":"经济学"},{"name":"工商管理","category":"管理学"},{"name":"新闻传播学","category":"文学"}]},{"name":"西北大学","type":"211","city":"西安","province":"陕西","min_score":580,"campus_rating":4,"canteen_rating":4,"dorm_rating":4,"tags":["双一流","211"],"majors":[{"name":"地质学","category":"理学"},{"name":"考古学","category":"历史学"},{"name":"经济学","category":"经济学"},{"name":"中国语言文学","category":"文学"},{"name":"历史学","category":"历史学"},{"name":"化学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"数学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"计算机科学","category":"工学"},{"name":"法学","category":"法学"},{"name":"新闻传播学","category":"文学"}]},{"name":"广西大学","type":"211","city":"南宁","province":"广西","min_score":560,"campus_rating":4,"canteen_rating":4,"dorm_rating":3,"tags":["双一流","211"],"majors":[{"name":"土木工程","category":"工学"},{"name":"电气工程","category":"工学"},{"name":"化学工程与技术","category":"工学"},{"name":"轻工技术与工程","category":"工学"},{"name":"兽医学","category":"农学"},{"name":"植物保护","category":"农学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"化学","category":"理学"},{"name":"法学","category":"法学"},{"name":"新闻传播学","category":"文学"},{"name":"工商管理","category":"管理学"}]},{"name":"贵州大学","type":"211","city":"贵阳","province":"贵州","min_score":550,"campus_rating":4,"canteen_rating":4,"dorm_rating":3,"tags":["双一流","211"],"majors":[{"name":"植物保护","category":"农学"},{"name":"材料科学","category":"工学"},{"name":"土木工程","category":"工学"},{"name":"化学工程与技术","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"化学","category":"理学"},{"name":"法学","category":"法学"},{"name":"中国语言文学","category":"文学"},{"name":"历史学","category":"历史学"},{"name":"经济学","category":"经济学"}]},{"name":"太原理工大学","type":"211","city":"太原","province":"山西","min_score":560,"campus_rating":3,"canteen_rating":3,"dorm_rating":3,"tags":["双一流","211"],"majors":[{"name":"化学工程与技术","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"矿业工程","category":"工学"},{"name":"机械工程","category":"工学"},{"name":"土木工程","category":"工学"},{"name":"电气工程","category":"工学"},{"name":"计算机科学","category":"工学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"法学","category":"法学"},{"name":"工商管理","category":"管理学"},{"name":"设计学","category":"艺术学"}]},{"name":"内蒙古大学","type":"211","city":"呼和浩特","province":"内蒙古","min_score":540,"campus_rating":4,"canteen_rating":3,"dorm_rating":3,"tags":["双一流","211"],"majors":[{"name":"生物学","category":"理学"},{"name":"中国少数民族语言文学","category":"文学"},{"name":"蒙古学","category":"文学"},{"name":"化学","category":"理学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"计算机科学","category":"工学"},{"name":"法学","category":"法学"},{"name":"经济学","category":"经济学"},{"name":"工商管理","category":"管理学"},{"name":"新闻传播学","category":"文学"},{"name":"生态学","category":"理学"}]},{"name":"新疆大学","type":"211","city":"乌鲁木齐","province":"新疆","min_score":520,"campus_rating":3,"canteen_rating":3,"dorm_rating":3,"tags":["双一流","211"],"majors":[{"name":"化学","category":"理学"},{"name":"数学","category":"理学"},{"name":"中国语言文学","category":"文学"},{"name":"法学","category":"法学"},{"name":"物理学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"计算机科学","category":"工学"},{"name":"土木工程","category":"工学"},{"name":"化学工程与技术","category":"工学"},{"name":"经济学","category":"经济学"},{"name":"历史学","category":"历史学"},{"name":"新闻传播学","category":"文学"}]},{"name":"石河子大学","type":"211","city":"石河子","province":"新疆","min_score":500,"campus_rating":3,"canteen_rating":3,"dorm_rating":3,"tags":["双一流","211"],"majors":[{"name":"化学工程与技术","category":"工学"},{"name":"农学","category":"农学"},{"name":"临床医学","category":"医学"},{"name":"动物医学","category":"农学"},{"name":"园艺学","category":"农学"},{"name":"植物保护","category":"农学"},{"name":"农业工程","category":"工学"},{"name":"护理学","category":"医学"},{"name":"药学","category":"医学"},{"name":"法学","category":"法学"},{"name":"经济学","category":"经济学"},{"name":"工商管理","category":"管理学"}]},{"name":"海南大学","type":"211","city":"海口","province":"海南","min_score":560,"campus_rating":5,"canteen_rating":5,"dorm_rating":5,"tags":["双一流","211"],"majors":[{"name":"作物学","category":"农学"},{"name":"法学","category":"法学"},{"name":"材料科学","category":"工学"},{"name":"化学","category":"理学"},{"name":"旅游管理","category":"管理学"},{"name":"工商管理","category":"管理学"},{"name":"中国语言文学","category":"文学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"计算机科学","category":"工学"},{"name":"新闻传播学","category":"文学"}]},{"name":"西藏大学","type":"211","city":"拉萨","province":"西藏","min_score":480,"campus_rating":4,"canteen_rating":3,"dorm_rating":3,"tags":["双一流","211"],"majors":[{"name":"中国少数民族语言文学","category":"文学"},{"name":"生态学","category":"理学"},{"name":"藏学","category":"法学"},{"name":"临床医学","category":"医学"},{"name":"法学","category":"法学"},{"name":"经济学","category":"经济学"},{"name":"教育学","category":"教育学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"计算机科学","category":"工学"},{"name":"建筑学","category":"工学"},{"name":"土木工程","category":"工学"}]},{"name":"青海大学","type":"211","city":"西宁","province":"青海","min_score":490,"campus_rating":3,"canteen_rating":3,"dorm_rating":3,"tags":["双一流","211"],"majors":[{"name":"生态学","category":"理学"},{"name":"作物学","category":"农学"},{"name":"化学工程与技术","category":"工学"},{"name":"材料科学","category":"工学"},{"name":"临床医学","category":"医学"},{"name":"中医学","category":"医学"},{"name":"藏医学","category":"医学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"法学","category":"法学"},{"name":"农学","category":"农学"},{"name":"草业科学","category":"农学"}]},{"name":"宁夏大学","type":"211","city":"银川","province":"宁夏","min_score":510,"campus_rating":4,"canteen_rating":3,"dorm_rating":3,"tags":["双一流","211"],"majors":[{"name":"化学工程与技术","category":"工学"},{"name":"草业科学","category":"农学"},{"name":"中国语言文学","category":"文学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"化学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"法学","category":"法学"},{"name":"经济学","category":"经济学"},{"name":"工商管理","category":"管理学"},{"name":"计算机科学","category":"工学"},{"name":"新闻传播学","category":"文学"}]},{"name":"延边大学","type":"211","city":"延吉","province":"吉林","min_score":530,"campus_rating":3,"canteen_rating":4,"dorm_rating":3,"tags":["双一流","211"],"majors":[{"name":"外国语言文学","category":"文学"},{"name":"朝鲜语","category":"文学"},{"name":"临床医学","category":"医学"},{"name":"化学","category":"理学"},{"name":"数学","category":"理学"},{"name":"物理学","category":"理学"},{"name":"生物学","category":"理学"},{"name":"法学","category":"法学"},{"name":"经济学","category":"经济学"},{"name":"护理学","category":"医学"},{"name":"药学","category":"医学"},{"name":"农学","category":"农学"}]}];
+const MBTI_COMPATIBILITY = {"INTJ":["计算机科学","数学","物理学","经济学","金融学","建筑学","哲学","法学"],"INTP":["计算机科学","数学","物理学","哲学","语言学","经济学","心理学"],"ENTJ":["工商管理","法学","经济学","金融学","国际关系","公共管理","政治学"],"ENTP":["创业学","市场营销","传播学","法学","经济学","心理学","设计学"],"INFJ":["心理学","教育学","哲学","文学","社会学","人类学","艺术学"],"INFP":["文学","艺术学","心理学","哲学","社会学","音乐学","历史学"],"ENFJ":["教育学","心理学","社会工作","人力资源","传播学","公共管理","医学"],"ENFP":["传播学","心理学","艺术学","市场营销","旅游管理","教育学","社会学"],"ISTJ":["会计学","审计学","工程管理","档案学","图书馆学","护理学","药学"],"ISFJ":["护理学","教育学","社会工作","图书档案学","会计学","药学","历史学"],"ESTJ":["工商管理","会计学","工程管理","公共管理","法学","军事学","护理学"],"ESFJ":["教育学","护理学","社会工作","人力资源","旅游管理","传播学","艺术学"],"ISTP":["机械工程","电子工程","计算机科学","土木工程","刑侦学","体育学","地理学"],"ISFP":["艺术学","设计学","音乐学","护理学","园艺学","心理学","社会工作"],"ESTP":["市场营销","体育学","传播学","创业学","法学","旅游管理","表演"],"ESFP":["表演","传播学","旅游管理","市场营销","设计学","音乐学","体育学"]};
+const HOLLAND_COMPATIBILITY = {"R":["机械工程","电子工程","土木工程","计算机科学","建筑学","航空航天","自动化"],"I":["物理学","数学","化学","生物学","医学","天文学","地理学"],"A":["艺术学","设计学","音乐学","戏剧影视","美术学","动画","摄影"],"S":["教育学","心理学","社会工作","护理学","医学","法学","公共管理"],"E":["工商管理","市场营销","国际经济","金融学","法学","传播学","旅游管理"],"C":["会计学","审计学","财务管理","统计学","图书馆学","档案学","信息管理"]};
+const PROVINCES = ['北京','天津','河北','山西','内蒙古','辽宁','吉林','黑龙江','上海','江苏','浙江','安徽','福建','江西','山东','河南','湖北','湖南','广东','广西','海南','重庆','四川','贵州','云南','西藏','陕西','甘肃','青海','宁夏','新疆'];
+const SCORE_TIERS = {"top":{"name":"顶尖高校","min":680,"description":"985顶尖高校及特色211"},"high":{"name":"重点高校","min":620,"description":"985及强势211高校"},"medium":{"name":"优质高校","min":550,"description":"普通211及强势双非"},"standard":{"name":"普通高校","min":480,"description":"普通本科院校"},"base":{"name":"基础高校","min":0,"description":"普通本科及专科院校"}};
+const MBTI_QUESTIONS = [{"id":1,"text":"你更喜欢","options":["独处并专注于自己的想法(E-I)","与他人互动并获得能量(I-E)"]},{"id":2,"text":"你更关注","options":["具体细节和实际经验(S-N)","整体概念和理论可能性(N-S)"]},{"id":3,"text":"你做决定时更依赖","options":["逻辑和客观分析(T-F)","个人价值观和情感(F-T)"]},{"id":4,"text":"你更喜欢","options":["有计划有条理的生活(J-P)","灵活随性的生活(P-J)"]},{"id":5,"text":"在社交场合中，你通常","options":["主动与人交流，感到精力充沛","保持安静，观察他人"]},{"id":6,"text":"处理信息时，你更倾向于","options":["关注事实和具体细节","关注背后的含义和联系"]},{"id":7,"text":"与人争论时，你更看重","options":["公正和逻辑","和谐与理解"]},{"id":8,"text":"对于截止日期，你通常","options":["提前完成，有条不紊","临近截止才匆忙完成"]},{"id":9,"text":"你的精力来源是","options":["热闹的聚会和活动","安静的独处时光"]},{"id":10,"text":"学习新知识时，你更喜欢","options":["动手实践和实验","阅读理论和概念"]},{"id":11,"text":"在团队中，你更倾向于","options":["分析问题，寻找最佳方案","协调关系，促进合作"]},{"id":12,"text":"周末你更想","options":["按照计划完成任务","随心所欲地度过"]},{"id":13,"text":"别人通常认为你是","options":["外向友好的","安静内敛的"]},{"id":14,"text":"你更信任","options":["经过验证的经验","直觉和灵感"]},{"id":15,"text":"面对冲突时，你倾向于","options":["直接指出问题","避免正面对抗"]},{"id":16,"text":"你的生活空间通常是","options":["整洁有序的","随意摆放的"]}];
+const HOLLAND_QUESTIONS = [{"id":1,"text":"你喜欢使用工具和机器","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"R"},{"id":2,"text":"你喜欢研究科学问题","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"I"},{"id":3,"text":"你喜欢艺术创作活动","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"A"},{"id":4,"text":"你喜欢帮助他人解决问题","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"S"},{"id":5,"text":"你喜欢领导和管理","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"E"},{"id":6,"text":"你喜欢处理数据和文件","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"C"},{"id":7,"text":"你喜欢户外运动和体力活动","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"R"},{"id":8,"text":"你喜欢探索抽象概念","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"I"},{"id":9,"text":"你喜欢音乐、绘画或写作","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"A"},{"id":10,"text":"你喜欢教学和培训","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"S"},{"id":11,"text":"你喜欢推销产品或想法","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"E"},{"id":12,"text":"你喜欢按规则和程序工作","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"C"},{"id":13,"text":"你喜欢修理和组装东西","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"R"},{"id":14,"text":"你喜欢做实验和分析数据","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"I"},{"id":15,"text":"你喜欢设计和创造","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"A"},{"id":16,"text":"你喜欢照顾和关怀他人","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"S"},{"id":17,"text":"你喜欢组织和影响他人","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"E"},{"id":18,"text":"你喜欢精确和系统的工作","options":["非常同意","同意","一般","不同意","非常不同意"],"type":"C"}];
 
-document.addEventListener('DOMContentLoaded', async () => {
-    await loadProvinces();
-    await loadMBTIQuestions();
-    await loadHollandQuestions();
+let currentStep = 1, mbtiAnswers = {}, hollandAnswers = {}, mbtiResult = '', hollandResult = '';
+
+document.addEventListener('DOMContentLoaded', () => {
+    const provinceSelect = document.getElementById('province');
+    const prefLocation = document.getElementById('pref-location');
+    PROVINCES.forEach(p => {
+        provinceSelect.innerHTML += `<option value="${p}">${p}</option>`;
+        prefLocation.innerHTML += `<option value="${p}">${p}</option>`;
+    });
+    const mbtiContainer = document.getElementById('mbti-questions');
+    MBTI_QUESTIONS.forEach(q => {
+        mbtiContainer.innerHTML += `<div class="question-card"><h3>${q.id}. ${q.text}</h3><div class="options">${q.options.map((o,i) => `<button class="option-btn" onclick="selectMBTI(${q.id},${i})">${o}</button>`).join('')}</div></div>`;
+    });
+    const hollandContainer = document.getElementById('holland-questions');
+    HOLLAND_QUESTIONS.forEach(q => {
+        hollandContainer.innerHTML += `<div class="question-card"><h3>${q.id}. ${q.text}</h3><div class="options">${q.options.map((o,i) => `<button class="option-btn" onclick="selectHolland(${q.id},${i},'${q.type}')">${o}</button>`).join('')}</div></div>`;
+    });
 });
 
-async function loadProvinces() {
-    const response = await fetch('/api/provinces');
-    const provinces = await response.json();
-    const select = document.getElementById('province');
-    const prefLocation = document.getElementById('pref-location');
-    
-    provinces.forEach(province => {
-        const option1 = document.createElement('option');
-        option1.value = province;
-        option1.textContent = province;
-        select.appendChild(option1);
-        
-        const option2 = document.createElement('option');
-        option2.value = province;
-        option2.textContent = province;
-        prefLocation.appendChild(option2);
-    });
-}
-
-async function loadMBTIQuestions() {
-    const response = await fetch('/api/mbti-questions');
-    const questions = await response.json();
-    const container = document.getElementById('mbti-questions');
-    
-    questions.forEach(q => {
-        const card = document.createElement('div');
-        card.className = 'question-card';
-        card.innerHTML = `
-            <h3>${q.id}. ${q.text}</h3>
-            <div class="options">
-                ${q.options.map((opt, idx) => `
-                    <button class="option-btn" onclick="selectMBTI(${q.id}, ${idx}, '${opt}')">${opt}</button>
-                `).join('')}
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
-async function loadHollandQuestions() {
-    const response = await fetch('/api/holland-questions');
-    const questions = await response.json();
-    const container = document.getElementById('holland-questions');
-    
-    questions.forEach(q => {
-        const card = document.createElement('div');
-        card.className = 'question-card';
-        card.innerHTML = `
-            <h3>${q.id}. ${q.text}</h3>
-            <div class="options">
-                ${q.options.map((opt, idx) => `
-                    <button class="option-btn" onclick="selectHolland(${q.id}, ${idx}, '${q.type}')">${opt}</button>
-                `).join('')}
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
-function selectMBTI(questionId, optionIndex, optionText) {
-    mbtiAnswers[questionId] = optionIndex;
-    
-    const card = document.querySelector(`#mbti-questions .question-card:nth-child(${questionId})`);
-    card.querySelectorAll('.option-btn').forEach((btn, idx) => {
-        btn.classList.toggle('selected', idx === optionIndex);
-    });
-}
-
-function selectHolland(questionId, optionIndex, type) {
-    hollandAnswers[questionId] = { index: optionIndex, type: type };
-    
-    const card = document.querySelector(`#holland-questions .question-card:nth-child(${questionId})`);
-    card.querySelectorAll('.option-btn').forEach((btn, idx) => {
-        btn.classList.toggle('selected', idx === optionIndex);
-    });
-}
+function selectMBTI(id, idx) { mbtiAnswers[id] = idx; document.querySelectorAll(`#mbti-questions .question-card:nth-child(${id}) .option-btn`).forEach((b,i) => b.classList.toggle('selected', i === idx)); }
+function selectHolland(id, idx, type) { hollandAnswers[id] = {index: idx, type}; document.querySelectorAll(`#holland-questions .question-card:nth-child(${id}) .option-btn`).forEach((b,i) => b.classList.toggle('selected', i === idx)); }
 
 function calculateMBTI() {
-    let ei = 0, sn = 0, tf = 0, jp = 0;
-    
-    const eiQuestions = [1, 5, 9, 13];
-    const snQuestions = [2, 6, 10, 14];
-    const tfQuestions = [3, 7, 11, 15];
-    const jpQuestions = [4, 8, 12, 16];
-    
-    eiQuestions.forEach(q => {
-        if (mbtiAnswers[q] === 0) ei++;
-        else if (mbtiAnswers[q] === 1) ei--;
-    });
-    
-    snQuestions.forEach(q => {
-        if (mbtiAnswers[q] === 0) sn++;
-        else if (mbtiAnswers[q] === 1) sn--;
-    });
-    
-    tfQuestions.forEach(q => {
-        if (mbtiAnswers[q] === 0) tf++;
-        else if (mbtiAnswers[q] === 1) tf--;
-    });
-    
-    jpQuestions.forEach(q => {
-        if (mbtiAnswers[q] === 0) jp++;
-        else if (mbtiAnswers[q] === 1) jp--;
-    });
-    
-    mbtiResult = (ei >= 0 ? 'E' : 'I') + 
-                 (sn >= 0 ? 'S' : 'N') + 
-                 (tf >= 0 ? 'T' : 'F') + 
-                 (jp >= 0 ? 'J' : 'P');
-    
-    console.log('MBTI Result:', mbtiResult);
+    let ei=0,sn=0,tf=0,jp=0;
+    [1,5,9,13].forEach(q => { if(mbtiAnswers[q]===0) ei++; else if(mbtiAnswers[q]===1) ei--; });
+    [2,6,10,14].forEach(q => { if(mbtiAnswers[q]===0) sn++; else if(mbtiAnswers[q]===1) sn--; });
+    [3,7,11,15].forEach(q => { if(mbtiAnswers[q]===0) tf++; else if(mbtiAnswers[q]===1) tf--; });
+    [4,8,12,16].forEach(q => { if(mbtiAnswers[q]===0) jp++; else if(mbtiAnswers[q]===1) jp--; });
+    mbtiResult = (ei>=0?'E':'I')+(sn>=0?'S':'N')+(tf>=0?'T':'F')+(jp>=0?'J':'P');
 }
 
 function calculateHolland() {
-    const counts = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
-    
-    Object.values(hollandAnswers).forEach(answer => {
-        const score = 4 - answer.index;
-        counts[answer.type] += score;
-    });
-    
-    const sorted = Object.entries(counts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3)
-        .map(entry => entry[0]);
-    
-    hollandResult = sorted.join('');
-    
-    console.log('Holland Result:', hollandResult);
+    const c = {R:0,I:0,A:0,S:0,E:0,C:0};
+    Object.values(hollandAnswers).forEach(a => c[a.type] += (4 - a.index));
+    hollandResult = Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,3).map(e=>e[0]).join('');
 }
 
 function nextStep(step) {
-    if (step === 2) {
-        const score = document.getElementById('score').value;
-        const province = document.getElementById('province').value;
-        
-        if (!score || score < 0 || score > 750) {
-            alert('请输入有效的高考分数（0-750）');
-            return;
-        }
-        
-        if (!province) {
-            alert('请选择所在省份');
-            return;
-        }
+    if(step===2) {
+        const score=document.getElementById('score').value;
+        const province=document.getElementById('province').value;
+        if(!score||score<0||score>750) return alert('请输入有效的高考分数（0-750）');
+        if(!province) return alert('请选择所在省份');
     }
-    
     document.getElementById(`step${currentStep}`).classList.remove('active');
     document.getElementById(`step${step}`).classList.add('active');
-    
     document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
     document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('completed');
     document.querySelector(`.step[data-step="${step}"]`).classList.add('active');
-    
     currentStep = step;
 }
 
 function prevStep(step) {
     document.getElementById(`step${currentStep}`).classList.remove('active');
     document.getElementById(`step${step}`).classList.add('active');
-    
     document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
     document.querySelector(`.step[data-step="${step}"]`).classList.remove('completed');
     document.querySelector(`.step[data-step="${step}"]`).classList.add('active');
-    
     currentStep = step;
 }
 
-async function submitRecommendation() {
+function submitRecommendation() {
     const score = parseInt(document.getElementById('score').value);
-    const province = document.getElementById('province').value;
-    
     const preferences = {
         location: document.getElementById('pref-location').value,
         campus_env: document.getElementById('pref-campus').checked,
         canteen: document.getElementById('pref-canteen').checked,
-        dorm: document.getElementById('pref-dorm').checked,
+        dorm: document.getElementById('pref-dorm').checked
     };
-    
-    const requestData = {
-        score,
-        province,
-        mbti: mbtiResult,
-        holland: hollandResult,
-        preferences
-    };
-    
-    try {
-        const response = await fetch('/api/recommend', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestData)
+    const matchingMajors = new Set();
+    if(mbtiResult && MBTI_COMPATIBILITY[mbtiResult]) MBTI_COMPATIBILITY[mbtiResult].forEach(m => matchingMajors.add(m));
+    if(hollandResult) hollandResult.split('').forEach(c => { if(HOLLAND_COMPATIBILITY[c]) HOLLAND_COMPATIBILITY[c].forEach(m => matchingMajors.add(m)); });
+    const getTier = s => s>=680?'top':s>=620?'high':s>=550?'medium':s>=480?'standard':'base';
+    const results = [];
+    COLLEGES.forEach(college => {
+        if(score < college.min_score - 30) return;
+        college.majors.forEach(major => {
+            if(matchingMajors.size > 0 && !matchingMajors.has(major.name)) return;
+            let ms = 0;
+            if(matchingMajors.has(major.name)) ms += 50;
+            if(score >= college.min_score) ms += Math.min((score-college.min_score)/50,1)*30;
+            if(preferences.location && college.city === preferences.location) ms += 10;
+            if(preferences.campus_env && college.campus_rating >= 4) ms += 5;
+            if(preferences.canteen && college.canteen_rating >= 4) ms += 5;
+            if(ms > 0) results.push({college:college.name,type:college.type,city:college.city,major:major.name,category:major.category,min_score:college.min_score,match_score:Math.round(ms*10)/10,tier:getTier(college.min_score),campus:college.campus_rating,canteen:college.canteen_rating,dorm:college.dorm_rating,tags:college.tags});
         });
-        
-        const result = await response.json();
-        displayResults(result);
-        nextStep(5);
-    } catch (error) {
-        alert('获取推荐失败，请重试');
-        console.error(error);
-    }
+    });
+    results.sort((a,b) => b.match_score-a.match_score || b.min_score-a.min_score);
+    const tierResults = {};
+    Object.keys(SCORE_TIERS).forEach(k => {
+        const items = results.filter(r => r.tier === k).slice(0,10);
+        if(items.length) tierResults[k] = {...SCORE_TIERS[k], recommendations: items};
+    });
+    displayResults({total:results.length,tiers:tierResults,matchingMajors:[...matchingMajors].slice(0,20),userTier:getTier(score),userTierName:SCORE_TIERS[getTier(score)].name});
+    nextStep(5);
 }
 
 function displayResults(result) {
-    const summaryDiv = document.getElementById('result-summary');
-    summaryDiv.innerHTML = `
-        <h3>你的性格类型: ${mbtiResult || '未测评'} | 兴趣代码: ${hollandResult || '未测评'}</h3>
-        <p>你的分数段: ${result.user_tier_name} | 共匹配到 ${result.total} 个推荐</p>
-    `;
-    
-    const majorsDiv = document.getElementById('matching-majors');
-    if (result.matching_majors.length > 0) {
-        majorsDiv.innerHTML = `
-            <h3>匹配的专业方向</h3>
-            <div class="major-tags">
-                ${result.matching_majors.map(major => `
-                    <span class="major-tag">${major}</span>
-                `).join('')}
-            </div>
-        `;
-    }
-    
-    const recommendationsDiv = document.getElementById('recommendations');
-    recommendationsDiv.innerHTML = '';
-    
-    const tierOrder = ['top', 'high', 'medium', 'standard', 'base'];
-    
-    tierOrder.forEach(tierKey => {
-        if (result.tiers[tierKey]) {
-            const tier = result.tiers[tierKey];
-            const tierDiv = document.createElement('div');
-            tierDiv.className = 'tier-section';
-            tierDiv.innerHTML = `
-                <div class="tier-header">
-                    <span class="tier-badge ${tierKey}">${tier.name}</span>
-                    <span class="tier-title">${tier.description}</span>
-                </div>
-                ${tier.recommendations.map(rec => `
-                    <div class="recommendation-card">
-                        <div class="rec-info">
-                            <h4>${rec.college}</h4>
-                            <div class="rec-meta">
-                                <span>${rec.city}</span>
-                                <span>${rec.major}</span>
-                                <span>最低分: ${rec.min_score}</span>
-                            </div>
-                            <div class="rec-tags">
-                                ${rec.tags.map(tag => `<span class="rec-tag">${tag}</span>`).join('')}
-                            </div>
-                            <div class="ratings">
-                                <span class="rating">校园: ${'★'.repeat(rec.campus_rating)}${'☆'.repeat(5-rec.campus_rating)}</span>
-                                <span class="rating">食堂: ${'★'.repeat(rec.canteen_rating)}${'☆'.repeat(5-rec.canteen_rating)}</span>
-                                <span class="rating">宿舍: ${'★'.repeat(rec.dorm_rating)}${'☆'.repeat(5-rec.dorm_rating)}</span>
-                            </div>
-                        </div>
-                        <div class="rec-score">
-                            <div class="match-score">${rec.match_score}</div>
-                            <div class="match-label">匹配度</div>
-                        </div>
-                    </div>
-                `).join('')}
-            `;
-            recommendationsDiv.appendChild(tierDiv);
+    document.getElementById('result-summary').innerHTML = `<h3>你的性格类型: ${mbtiResult||'未测评'} | 兴趣代码: ${hollandResult||'未测评'}</h3><p>分数段: ${result.userTierName} | 共匹配 ${result.total} 个推荐</p>`;
+    if(result.matchingMajors.length) document.getElementById('matching-majors').innerHTML = `<h3>匹配的专业方向</h3><div class="major-tags">${result.matchingMajors.map(m=>`<span class="major-tag">${m}</span>`).join('')}</div>`;
+    const container = document.getElementById('recommendations');
+    container.innerHTML = '';
+    ['top','high','medium','standard','base'].forEach(k => {
+        if(result.tiers[k]) {
+            const t = result.tiers[k];
+            container.innerHTML += `<div class="tier-section"><div class="tier-header"><span class="tier-badge ${k}">${t.name}</span><span class="tier-title">${t.description}</span></div>${t.recommendations.map(r => `<div class="recommendation-card"><div class="rec-info"><h4>${r.college}</h4><div class="rec-meta"><span>${r.city}</span><span>${r.major}</span><span>最低分: ${r.min_score}</span></div><div class="rec-tags">${r.tags.map(t=>`<span class="rec-tag">${t}</span>`).join('')}</div><div class="ratings"><span class="rating">校园: ${'★'.repeat(r.campus)}${'☆'.repeat(5-r.campus)}</span><span class="rating">食堂: ${'★'.repeat(r.canteen)}${'☆'.repeat(5-r.canteen)}</span><span class="rating">宿舍: ${'★'.repeat(r.dorm)}${'☆'.repeat(5-r.dorm)}</span></div></div><div class="rec-score"><div class="match-score">${r.match_score}</div><div class="match-label">匹配度</div></div></div>`).join('')}</div>`;
         }
     });
-    
-    if (Object.keys(result.tiers).length === 0) {
-        recommendationsDiv.innerHTML = '<p style="text-align:center; color:#666; padding:40px;">暂无匹配的推荐，请尝试调整分数或偏好设置</p>';
-    }
+    if(!Object.keys(result.tiers).length) container.innerHTML = '<p style="text-align:center;color:#666;padding:40px;">暂无匹配的推荐，请调整分数或偏好</p>';
 }
