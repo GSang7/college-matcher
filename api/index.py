@@ -215,3 +215,8 @@ def get_provinces():
         '云南', '西藏', '陕西', '甘肃', '青海', '宁夏', '新疆'
     ]
     return jsonify(provinces)
+
+from serverless_wsgi import handle_request
+
+def lambda_handler(event, context):
+    return handle_request(app, event, context)
