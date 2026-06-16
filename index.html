@@ -3,64 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>高考志愿智能匹配系统</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <title>志愿匹配 · AI智能推荐系统</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>高考志愿智能匹配系统</h1>
-            <p>基于性格测评与兴趣分析，为你推荐最适合的大学和专业</p>
+            <h1>志愿匹配</h1>
+            <p>基于性格与兴趣的智能大学专业推荐</p>
         </header>
 
         <div class="steps-indicator">
-            <div class="step active" data-step="1">1. 基本信息</div>
-            <div class="step" data-step="2">2. 性格测评</div>
-            <div class="step" data-step="3">3. 兴趣测评</div>
-            <div class="step" data-step="4">4. 偏好设置</div>
-            <div class="step" data-step="5">5. 查看结果</div>
+            <div class="step active" data-step="1">基本信息</div>
+            <div class="step" data-step="2">性格测评</div>
+            <div class="step" data-step="3">兴趣测评</div>
+            <div class="step" data-step="4">偏好设置</div>
+            <div class="step" data-step="5">推荐结果</div>
         </div>
 
         <div class="form-container">
             <div class="form-step active" id="step1">
                 <h2>基本信息</h2>
+                <p class="description">输入你的高考成绩，开始智能匹配</p>
                 <div class="form-group">
-                    <label for="score">高考分数</label>
-                    <input type="number" id="score" placeholder="请输入你的高考分数" min="0" max="750">
+                    <label>高考分数</label>
+                    <input type="number" id="score" placeholder="请输入分数" min="0" max="750">
                 </div>
                 <div class="form-group">
-                    <label for="province">所在省份</label>
+                    <label>所在省份</label>
                     <select id="province">
                         <option value="">请选择省份</option>
                     </select>
                 </div>
                 <div class="btn-group">
-                    <button class="btn btn-next" onclick="nextStep(2)">下一步</button>
+                    <button class="btn btn-next" onclick="nextStep(2)">继续</button>
                 </div>
             </div>
 
             <div class="form-step" id="step2">
-                <h2>MBTI性格测评</h2>
-                <p class="description">回答以下问题，了解你的性格类型</p>
+                <h2>性格测评</h2>
+                <p class="description">MBTI 16型人格测试 · 了解你的性格特质</p>
                 <div id="mbti-questions"></div>
                 <div class="btn-group">
-                    <button class="btn btn-prev" onclick="prevStep(1)">上一步</button>
-                    <button class="btn btn-next" onclick="calculateMBTI(); nextStep(3)">下一步</button>
+                    <button class="btn btn-prev" onclick="prevStep(1)">返回</button>
+                    <button class="btn btn-next" onclick="calculateMBTI(); nextStep(3)">继续</button>
                 </div>
             </div>
 
             <div class="form-step" id="step3">
-                <h2>霍兰德职业兴趣测评</h2>
-                <p class="description">选择符合你兴趣的选项</p>
+                <h2>兴趣测评</h2>
+                <p class="description">霍兰德职业兴趣测试 · 发现你的职业倾向</p>
                 <div id="holland-questions"></div>
                 <div class="btn-group">
-                    <button class="btn btn-prev" onclick="prevStep(2)">上一步</button>
-                    <button class="btn btn-next" onclick="calculateHolland(); nextStep(4)">下一步</button>
+                    <button class="btn btn-prev" onclick="prevStep(2)">返回</button>
+                    <button class="btn btn-next" onclick="calculateHolland(); nextStep(4)">继续</button>
                 </div>
             </div>
 
             <div class="form-step" id="step4">
-                <h2>个人偏好</h2>
+                <h2>偏好设置</h2>
+                <p class="description">根据你的需求筛选推荐结果</p>
                 <div class="form-group">
                     <label>期望城市</label>
                     <select id="pref-location">
@@ -79,13 +82,14 @@
                     </label>
                 </div>
                 <div class="btn-group">
-                    <button class="btn btn-prev" onclick="prevStep(3)">上一步</button>
+                    <button class="btn btn-prev" onclick="prevStep(3)">返回</button>
                     <button class="btn btn-submit" onclick="submitRecommendation()">获取推荐</button>
                 </div>
             </div>
 
             <div class="form-step" id="step5">
                 <h2>推荐结果</h2>
+                <p class="description">为你智能匹配的大学与专业</p>
                 <div id="result-summary"></div>
                 <div id="matching-majors"></div>
                 <div id="recommendations"></div>
@@ -96,6 +100,6 @@
         </div>
     </div>
 
-    <script src="/static/js/app.js"></script>
+    <script src="static/js/app.js"></script>
 </body>
 </html>
