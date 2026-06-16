@@ -110,9 +110,10 @@ function submitRecommendation() {
     Promise.all([
         fetch('static/data/colleges_full.json').then(r => r.json()),
         fetch('static/data/universities_211.json').then(r => r.json()),
-        fetch('static/data/universities_other.json').then(r => r.json())
-    ]).then(([colleges985, colleges211, collegesOther]) => {
-        const COLLEGES = [...colleges985, ...colleges211, ...collegesOther];
+        fetch('static/data/universities_other.json').then(r => r.json()),
+        fetch('static/data/universities_remaining.json').then(r => r.json())
+    ]).then(([colleges985, colleges211, collegesOther, collegesRemaining]) => {
+        const COLLEGES = [...colleges985, ...colleges211, ...collegesOther, ...collegesRemaining];
             const results = [];
             COLLEGES.forEach(college => {
                 const minScore = userSubject === '理科' ? (college['min_score理科'] || college.min_score) : (college['min_score文科'] || college.min_score);
