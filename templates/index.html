@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高考志愿智能匹配系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>高考志愿智能匹配系统</h1>
+            <p>基于性格测评与兴趣分析，为你推荐最适合的大学和专业</p>
+        </header>
+
+        <div class="steps-indicator">
+            <div class="step active" data-step="1">1. 基本信息</div>
+            <div class="step" data-step="2">2. 性格测评</div>
+            <div class="step" data-step="3">3. 兴趣测评</div>
+            <div class="step" data-step="4">4. 偏好设置</div>
+            <div class="step" data-step="5">5. 查看结果</div>
+        </div>
+
+        <div class="form-container">
+            <div class="form-step active" id="step1">
+                <h2>基本信息</h2>
+                <div class="form-group">
+                    <label for="score">高考分数</label>
+                    <input type="number" id="score" placeholder="请输入你的高考分数" min="0" max="750">
+                </div>
+                <div class="form-group">
+                    <label for="province">所在省份</label>
+                    <select id="province">
+                        <option value="">请选择省份</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-next" onclick="nextStep(2)">下一步</button>
+                </div>
+            </div>
+
+            <div class="form-step" id="step2">
+                <h2>MBTI性格测评</h2>
+                <p class="description">回答以下问题，了解你的性格类型</p>
+                <div id="mbti-questions"></div>
+                <div class="btn-group">
+                    <button class="btn btn-prev" onclick="prevStep(1)">上一步</button>
+                    <button class="btn btn-next" onclick="calculateMBTI(); nextStep(3)">下一步</button>
+                </div>
+            </div>
+
+            <div class="form-step" id="step3">
+                <h2>霍兰德职业兴趣测评</h2>
+                <p class="description">选择符合你兴趣的选项</p>
+                <div id="holland-questions"></div>
+                <div class="btn-group">
+                    <button class="btn btn-prev" onclick="prevStep(2)">上一步</button>
+                    <button class="btn btn-next" onclick="calculateHolland(); nextStep(4)">下一步</button>
+                </div>
+            </div>
+
+            <div class="form-step" id="step4">
+                <h2>个人偏好</h2>
+                <div class="form-group">
+                    <label>期望城市</label>
+                    <select id="pref-location">
+                        <option value="">不限</option>
+                    </select>
+                </div>
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="pref-campus"> 重视校园环境
+                    </label>
+                    <label>
+                        <input type="checkbox" id="pref-canteen"> 重视食堂质量
+                    </label>
+                    <label>
+                        <input type="checkbox" id="pref-dorm"> 重视宿舍条件
+                    </label>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-prev" onclick="prevStep(3)">上一步</button>
+                    <button class="btn btn-submit" onclick="submitRecommendation()">获取推荐</button>
+                </div>
+            </div>
+
+            <div class="form-step" id="step5">
+                <h2>推荐结果</h2>
+                <div id="result-summary"></div>
+                <div id="matching-majors"></div>
+                <div id="recommendations"></div>
+                <div class="btn-group">
+                    <button class="btn btn-prev" onclick="prevStep(4)">重新选择</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
